@@ -79,6 +79,13 @@ export class StockAlreadyExistsException extends DomainException {
   }
 }
 
+export class HardDeleteNotAllowedException extends DomainException {
+  constructor(entity: string = 'Stock') {
+    super(`Hard delete of ${entity} is not allowed. Use soft-delete instead.`, 'HARD_DELETE_NOT_ALLOWED');
+    Object.setPrototypeOf(this, HardDeleteNotAllowedException.prototype);
+  }
+}
+
 export class PortfolioException extends DomainException {
   constructor(message: string) {
     super(message, 'PORTFOLIO_ERROR');

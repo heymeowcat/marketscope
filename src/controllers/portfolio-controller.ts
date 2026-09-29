@@ -43,7 +43,11 @@ export class PortfolioController {
 
   private async getStats(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const customerId = req.user!.user_id || req.user!.userId;
+      const customerId = req.user?.user_id || req.user?.userId;
+      if (!customerId) {
+        res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user ID' } });
+        return;
+      }
 
       const stats = await this.portfolioService.getStats(customerId);
 
@@ -60,7 +64,11 @@ export class PortfolioController {
 
   private async getHoldings(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const customerId = req.user!.user_id || req.user!.userId;
+      const customerId = req.user?.user_id || req.user?.userId;
+      if (!customerId) {
+        res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user ID' } });
+        return;
+      }
 
       const holdingsResponse = await this.portfolioService.getHoldings(customerId);
 
@@ -77,7 +85,11 @@ export class PortfolioController {
 
   private async getSummary(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const customerId = req.user!.user_id || req.user!.userId;
+      const customerId = req.user?.user_id || req.user?.userId;
+      if (!customerId) {
+        res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user ID' } });
+        return;
+      }
       const user = await this.userRepository.findById(customerId);
 
       if (!user) {

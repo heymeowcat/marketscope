@@ -8,6 +8,8 @@ import { StockRepository } from '../../src/repositories/stock-repository';
 import { WatchlistRepository } from '../../src/repositories/watchlist-repository';
 import { WatchlistSymbolRepository } from '../../src/repositories/watchlist-symbol-repository';
 import { StockStatus } from '../../src/domain/stock';
+import { UserRole, UserStatus } from '../../src/domain/user';
+import jwt from 'jsonwebtoken';
 
 // [AC-04] Watchlist creation via REST API
 describe('POST /api/v1/watchlists', () => {
@@ -31,14 +33,14 @@ describe('POST /api/v1/watchlists', () => {
 
     // Register and login a customer
     await userRepository.create({
-      user_id: 'customer-123',
+      id: 'customer-123',
       email: 'customer@example.com',
-      hashed_password: 'hashed',
-      role: 'CUSTOMER',
-      status: 'ACTIVATED',
-      created_at: new Date(),
-      last_login: null,
-      role_updated_at: null
+      passwordHash: 'hashed',
+      role: UserRole.CUSTOMER,
+      status: UserStatus.ACTIVE,
+      cashBalance: new Decimal('50000'),
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     // Seed stocks
@@ -73,8 +75,8 @@ describe('POST /api/v1/watchlists', () => {
 
     // Generate JWT token for customer
     const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key';
-    const payload = { userId: 'customer-123', email: 'customer@example.com', role: 'CUSTOMER' };
-    const token = require('jsonwebtoken').sign(payload, jwtSecret);
+    const payload = { userId: 'customer-123', email: 'customer@example.com', role: UserRole.CUSTOMER };
+    const token = jwt.sign(payload, jwtSecret);
     authToken = token;
   });
 
@@ -158,14 +160,14 @@ describe('GET /api/v1/watchlists', () => {
     await watchlistSymbolRepository.clear?.();
 
     await userRepository.create({
-      user_id: 'customer-123',
+      id: 'customer-123',
       email: 'customer@example.com',
-      hashed_password: 'hashed',
-      role: 'CUSTOMER',
-      status: 'ACTIVATED',
-      created_at: new Date(),
-      last_login: null,
-      role_updated_at: null
+      passwordHash: 'hashed',
+      role: UserRole.CUSTOMER,
+      status: UserStatus.ACTIVE,
+      cashBalance: new Decimal('50000'),
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     await stockRepository.create({

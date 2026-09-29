@@ -8,6 +8,8 @@ import { StockRepository } from '../../src/repositories/stock-repository';
 import { WatchlistRepository } from '../../src/repositories/watchlist-repository';
 import { WatchlistSymbolRepository } from '../../src/repositories/watchlist-symbol-repository';
 import { StockStatus } from '../../src/domain/stock';
+import { UserRole, UserStatus } from '../../src/domain/user';
+import jwt from 'jsonwebtoken';
 
 // [AC-05] Watchlist atomic updates via REST API
 describe('PUT /api/v1/watchlists/:id', () => {
@@ -31,14 +33,14 @@ describe('PUT /api/v1/watchlists/:id', () => {
     await watchlistSymbolRepository.clear?.();
 
     await userRepository.create({
-      userId: 'customer-123',
+      id: 'customer-123',
       email: 'customer@example.com',
-      hashed_password: 'hashed',
-      role: 'CUSTOMER',
-      status: 'ACTIVATED',
-      created_at: new Date(),
-      last_login: null,
-      role_updated_at: null
+      passwordHash: 'hashed',
+      role: UserRole.CUSTOMER,
+      status: UserStatus.ACTIVE,
+      cashBalance: new Decimal('50000'),
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     // Seed stocks
@@ -83,8 +85,8 @@ describe('PUT /api/v1/watchlists/:id', () => {
     });
 
     const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key';
-    const payload = { userId: 'customer-123', email: 'customer@example.com', role: 'CUSTOMER' };
-    const token = require('jsonwebtoken').sign(payload, jwtSecret);
+    const payload = { userId: 'customer-123', email: 'customer@example.com', role: UserRole.CUSTOMER };
+    const token = jwt.sign(payload, jwtSecret);
     authToken = token;
 
     // Create initial watchlist
@@ -174,14 +176,14 @@ describe('DELETE /api/v1/watchlists/:id', () => {
     await watchlistSymbolRepository.clear?.();
 
     await userRepository.create({
-      userId: 'customer-123',
+      id: 'customer-123',
       email: 'customer@example.com',
-      hashed_password: 'hashed',
-      role: 'CUSTOMER',
-      status: 'ACTIVATED',
-      created_at: new Date(),
-      last_login: null,
-      role_updated_at: null
+      passwordHash: 'hashed',
+      role: UserRole.CUSTOMER,
+      status: UserStatus.ACTIVE,
+      cashBalance: new Decimal('50000'),
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     await stockRepository.create({
@@ -203,8 +205,8 @@ describe('DELETE /api/v1/watchlists/:id', () => {
     });
 
     const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key';
-    const payload = { userId: 'customer-123', email: 'customer@example.com', role: 'CUSTOMER' };
-    const token = require('jsonwebtoken').sign(payload, jwtSecret);
+    const payload = { userId: 'customer-123', email: 'customer@example.com', role: UserRole.CUSTOMER };
+    const token = jwt.sign(payload, jwtSecret);
     authToken = token;
 
     const createResponse = await request(app)
@@ -257,14 +259,14 @@ describe('GET /api/v1/watchlists/:id', () => {
     await watchlistSymbolRepository.clear?.();
 
     await userRepository.create({
-      userId: 'customer-123',
+      id: 'customer-123',
       email: 'customer@example.com',
-      hashed_password: 'hashed',
-      role: 'CUSTOMER',
-      status: 'ACTIVATED',
-      created_at: new Date(),
-      last_login: null,
-      role_updated_at: null
+      passwordHash: 'hashed',
+      role: UserRole.CUSTOMER,
+      status: UserStatus.ACTIVE,
+      cashBalance: new Decimal('50000'),
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     await stockRepository.create({
@@ -286,8 +288,8 @@ describe('GET /api/v1/watchlists/:id', () => {
     });
 
     const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key';
-    const payload = { userId: 'customer-123', email: 'customer@example.com', role: 'CUSTOMER' };
-    const token = require('jsonwebtoken').sign(payload, jwtSecret);
+    const payload = { userId: 'customer-123', email: 'customer@example.com', role: UserRole.CUSTOMER };
+    const token = jwt.sign(payload, jwtSecret);
     authToken = token;
 
     const createResponse = await request(app)
