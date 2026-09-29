@@ -1,0 +1,78 @@
+{
+  "sprint_name": "Sprint 3: Order Execution & Analytics Dashboard",
+  "group": "C",
+  "stories": ["AC-06", "AC-07", "AC-08", "AC-10"],
+  "features": ["order", "analytics"],
+  "acceptance_criteria": [
+    "AC-06: Order placement (BUY/SELL, MARKET/LIMIT) in PENDING state with server timestamp",
+    "AC-07: Order lifecycle state machine; invalid transitions raise InvalidOrderStateException",
+    "AC-08: BUY order fails with InsufficientFundsException when cost exceeds available cash",
+    "AC-10: Daily statistics endpoint returns top 5 gainers and top 5 losers from current holdings"
+  ],
+  "contract": {
+    "api_checks": [
+      {
+        "id": "api-007",
+        "method": "POST",
+        "path": "/api/v1/orders",
+        "headers": { "Authorization": "Bearer customer-token", "Content-Type": "application/json" },
+        "expected_status": 201,
+        "description": "AC-06: Order placed enters PENDING state"
+      },
+      {
+        "id": "api-008",
+        "method": "POST",
+        "path": "/api/v1/orders/ord-executed/cancel",
+        "headers": { "Authorization": "Bearer customer-token" },
+        "expected_status": 409,
+        "description": "AC-07: Cancelling executed order raises InvalidOrderStateException"
+      },
+      {
+        "id": "api-009",
+        "method": "POST",
+        "path": "/api/v1/orders",
+        "headers": { "Authorization": "Bearer poor-customer-token", "Content-Type": "application/json" },
+        "expected_status": 400,
+        "description": "AC-08: Insufficient funds throws InsufficientFundsException"
+      },
+      {
+        "id": "api-010",
+        "method": "GET",
+        "path": "/api/v1/analytics/daily-stats",
+        "headers": { "Authorization": "Bearer customer-token" },
+        "expected_status": 200,
+        "description": "AC-10: Daily top 5 gainers and top 5 losers"
+      }
+    ],
+    "playwright_checks": [
+      {
+        "id": "pw-003",
+        "description": "Order placement modal validates cash sufficiency and shows confirmation",
+        "url": "/trade",
+        "steps": [
+          { "action": "navigate", "selector": null, "value": "/trade", "assertion": "trade view loaded" },
+          { "action": "click", "selector": "[data-testid='buy-btn']", "value": null, "assertion": "buy selected" },
+          { "action": "type", "selector": "[data-testid='quantity-input']", "value": "5", "assertion": "quantity typed" },
+          { "action": "assert_visible", "selector": "[data-testid='order-summary-cost']", "value": null, "assertion": "cost calculated" }
+        ]
+      }
+    ],
+    "design_checks": {
+      "visual_hierarchy": { "required": true, "min_score": 8 },
+      "accessibility": { "required": true, "min_score": 8 },
+      "responsiveness": { "required": true, "min_score": 8 },
+      "interaction_feedback": { "required": true, "min_score": 8 }
+    },
+    "performance_checks": [
+      {
+        "endpoint": "/api/v1/analytics/daily-stats",
+        "max_response_time_ms": 500,
+        "method": "GET"
+      }
+    ],
+    "architecture_checks": {
+      "immutability": { "required": true, "description": "Executed orders and trades are append-only (NFR-02)" },
+      "state_machine": { "required": true, "description": "Strict state transition enforcement (AC-07)" }
+    }
+  }
+}

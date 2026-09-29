@@ -1,0 +1,17 @@
+{
+  "name": "marketscope-trading-platform",
+  "version": "1.0.0",
+  "description": "AI-Native Stock Trading & Portfolio Analytics Platform substrate for MarketScope (BC-AINE-006). Packages custom trading agents, financial validation hooks, domain skills, and architectural guardrails.",
+  "author": {
+    "name": "MarketScope Engineering Team"
+  },
+  "homepage": "https://git.virtusa.com/genai-virtusa/helio-sdlc-harness",
+  "keywords": [
+    "fintech",
+    "trading",
+    "portfolio-analytics",
+    "claude-harness",
+    "ai-native",
+    "agent-substrate"
+  ]
+}

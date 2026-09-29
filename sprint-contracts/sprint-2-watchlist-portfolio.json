@@ -1,0 +1,69 @@
+{
+  "sprint_name": "Sprint 2: Watchlist & Portfolio Valuation",
+  "group": "B",
+  "stories": ["AC-04", "AC-05", "AC-09"],
+  "features": ["watchlist", "portfolio"],
+  "acceptance_criteria": [
+    "AC-04: Watchlist creation with name and >=1 symbol (max 10 watchlists per customer)",
+    "AC-05: Watchlist atomic updates; partial updates rejected with WatchlistUpdateException",
+    "AC-09: Portfolio statistics returning total_invested, current_value, absolute_pnl, percent_pnl"
+  ],
+  "contract": {
+    "api_checks": [
+      {
+        "id": "api-004",
+        "method": "POST",
+        "path": "/api/v1/watchlists",
+        "headers": { "Authorization": "Bearer customer-token" },
+        "expected_status": 201,
+        "description": "AC-04: Create watchlist with symbols"
+      },
+      {
+        "id": "api-005",
+        "method": "PUT",
+        "path": "/api/v1/watchlists/wl-001",
+        "headers": { "Authorization": "Bearer customer-token" },
+        "expected_status": 422,
+        "description": "AC-05: Atomic update rejects invalid symbol with WatchlistUpdateException"
+      },
+      {
+        "id": "api-006",
+        "method": "GET",
+        "path": "/api/v1/portfolio/stats",
+        "headers": { "Authorization": "Bearer customer-token" },
+        "expected_status": 200,
+        "description": "AC-09: Portfolio statistics with fixed-point P&L"
+      }
+    ],
+    "playwright_checks": [
+      {
+        "id": "pw-002",
+        "description": "Portfolio dashboard displays total invested, current valuation, and P&L cards",
+        "url": "/portfolio",
+        "steps": [
+          { "action": "navigate", "selector": null, "value": "/portfolio", "assertion": "portfolio page loaded" },
+          { "action": "assert_visible", "selector": "[data-testid='total-invested-card']", "value": null, "assertion": "total invested card visible" },
+          { "action": "assert_visible", "selector": "[data-testid='current-value-card']", "value": null, "assertion": "current value card visible" },
+          { "action": "assert_visible", "selector": "[data-testid='pnl-card']", "value": null, "assertion": "pnl card visible" }
+        ]
+      }
+    ],
+    "design_checks": {
+      "visual_hierarchy": { "required": true, "min_score": 8 },
+      "accessibility": { "required": true, "min_score": 8 },
+      "responsiveness": { "required": true, "min_score": 8 },
+      "interaction_feedback": { "required": true, "min_score": 8 }
+    },
+    "performance_checks": [
+      {
+        "endpoint": "/api/v1/portfolio/stats",
+        "max_response_time_ms": 500,
+        "method": "GET"
+      }
+    ],
+    "architecture_checks": {
+      "fixed_point_math": { "required": true, "description": "Decimal.js used for all P&L math (NFR-01)" },
+      "atomic_transactions": { "required": true, "description": "Watchlist modifications rollback on error" }
+    }
+  }
+}

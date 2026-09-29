@@ -1,0 +1,130 @@
+{
+  "users": [
+    {
+      "id": "usr-admin-01",
+      "email": "admin@marketscope.internal",
+      "passwordHash": "$2a$10$wT8K7Y1D2QzN1eY9K8xGXe6v0zU1P2Q3R4S5T6U7V8W9X0Y1Z2a3b",
+      "role": "ADMIN",
+      "status": "ACTIVE",
+      "cashBalance": "500000.00"
+    },
+    {
+      "id": "usr-cust-01",
+      "email": "alex.investor@example.com",
+      "passwordHash": "$2a$10$wT8K7Y1D2QzN1eY9K8xGXe6v0zU1P2Q3R4S5T6U7V8W9X0Y1Z2a3b",
+      "role": "CUSTOMER",
+      "status": "ACTIVE",
+      "cashBalance": "100000.00"
+    },
+    {
+      "id": "usr-cust-02",
+      "email": "sam.trader@example.com",
+      "passwordHash": "$2a$10$wT8K7Y1D2QzN1eY9K8xGXe6v0zU1P2Q3R4S5T6U7V8W9X0Y1Z2a3b",
+      "role": "CUSTOMER",
+      "status": "SUSPENDED",
+      "cashBalance": "25000.00"
+    }
+  ],
+  "stocks": [
+    {
+      "symbol": "AAPL",
+      "companyName": "Apple Inc.",
+      "sector": "Technology",
+      "exchange": "NASDAQ",
+      "status": "ACTIVE",
+      "currentPrice": "180.50"
+    },
+    {
+      "symbol": "MSFT",
+      "companyName": "Microsoft Corporation",
+      "sector": "Technology",
+      "exchange": "NASDAQ",
+      "status": "ACTIVE",
+      "currentPrice": "420.75"
+    },
+    {
+      "symbol": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "exchange": "NASDAQ",
+      "status": "ACTIVE",
+      "currentPrice": "125.25"
+    },
+    {
+      "symbol": "AMZN",
+      "companyName": "Amazon.com Inc.",
+      "sector": "Consumer Cyclical",
+      "exchange": "NASDAQ",
+      "status": "ACTIVE",
+      "currentPrice": "185.00"
+    },
+    {
+      "symbol": "GOOGL",
+      "companyName": "Alphabet Inc.",
+      "sector": "Communication Services",
+      "exchange": "NASDAQ",
+      "status": "ACTIVE",
+      "currentPrice": "175.40"
+    },
+    {
+      "symbol": "TSLA",
+      "companyName": "Tesla Inc.",
+      "sector": "Automotive",
+      "exchange": "NASDAQ",
+      "status": "DELISTED",
+      "currentPrice": "210.00",
+      "delistedAt": "2026-09-01T12:00:00.000Z"
+    }
+  ],
+  "watchlists": [
+    {
+      "id": "wl-001",
+      "userId": "usr-cust-01",
+      "name": "Mega-Cap Tech",
+      "symbols": ["AAPL", "MSFT", "NVDA", "AMZN"]
+    },
+    {
+      "id": "wl-002",
+      "userId": "usr-cust-01",
+      "name": "Cloud & AI",
+      "symbols": ["MSFT", "GOOGL", "NVDA"]
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord-001",
+      "userId": "usr-cust-01",
+      "symbol": "AAPL",
+      "side": "BUY",
+      "orderType": "MARKET",
+      "quantity": 10,
+      "price": "150.00",
+      "status": "EXECUTED",
+      "createdAt": "2026-09-15T14:30:00.000Z",
+      "executedAt": "2026-09-15T14:30:05.000Z"
+    },
+    {
+      "id": "ord-002",
+      "userId": "usr-cust-01",
+      "symbol": "MSFT",
+      "side": "BUY",
+      "orderType": "MARKET",
+      "quantity": 5,
+      "price": "300.00",
+      "status": "EXECUTED",
+      "createdAt": "2026-09-16T10:15:00.000Z",
+      "executedAt": "2026-09-16T10:15:03.000Z"
+    },
+    {
+      "id": "ord-003",
+      "userId": "usr-cust-01",
+      "symbol": "NVDA",
+      "side": "BUY",
+      "orderType": "LIMIT",
+      "quantity": 20,
+      "price": "120.00",
+      "status": "PENDING",
+      "createdAt": "2026-09-29T16:00:00.000Z"
+    }
+  ]
+}

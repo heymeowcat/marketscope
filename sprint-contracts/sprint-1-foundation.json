@@ -1,0 +1,72 @@
+{
+  "sprint_name": "Sprint 1: Foundation (User Management & Stock Catalog)",
+  "group": "A",
+  "stories": ["AC-01", "AC-02", "AC-03"],
+  "features": ["user-management", "stock-catalog"],
+  "acceptance_criteria": [
+    "AC-01: Customer registration with email/password created in ACTIVE state with role=CUSTOMER",
+    "AC-02: Admin role update (CUSTOMER/ADMIN/SUSPENDED) audited with actor and timestamp",
+    "AC-03: Stock catalog full CRUD for ADMIN with soft-delete to DELISTED status (no hard deletes)"
+  ],
+  "contract": {
+    "api_checks": [
+      {
+        "id": "api-001",
+        "method": "POST",
+        "path": "/api/v1/auth/register",
+        "headers": { "Content-Type": "application/json" },
+        "expected_status": 201,
+        "description": "AC-01: Customer registration creates active account"
+      },
+      {
+        "id": "api-002",
+        "method": "PATCH",
+        "path": "/api/v1/admin/users/cust-001/role",
+        "headers": { "Authorization": "Bearer admin-token" },
+        "expected_status": 200,
+        "description": "AC-02: Admin role modification with audit entry"
+      },
+      {
+        "id": "api-003",
+        "method": "DELETE",
+        "path": "/api/v1/admin/stocks/TSLA",
+        "headers": { "Authorization": "Bearer admin-token" },
+        "expected_status": 200,
+        "description": "AC-03: Stock soft-delete sets status to DELISTED"
+      }
+    ],
+    "playwright_checks": [
+      {
+        "id": "pw-001",
+        "description": "Registration page loads, submits form, and displays active dashboard",
+        "url": "/register",
+        "steps": [
+          { "action": "navigate", "selector": null, "value": "/register", "assertion": "register loaded" },
+          { "action": "type", "selector": "[data-testid='email-input']", "value": "test@marketscope.com", "assertion": "email typed" },
+          { "action": "type", "selector": "[data-testid='password-input']", "value": "SecurePass123!", "assertion": "password typed" },
+          { "action": "click", "selector": "[data-testid='register-btn']", "value": null, "assertion": "button clicked" },
+          { "action": "assert_visible", "selector": "[data-testid='dashboard-welcome']", "value": null, "assertion": "dashboard visible" }
+        ]
+      }
+    ],
+    "design_checks": {
+      "visual_hierarchy": { "required": true, "min_score": 8 },
+      "accessibility": { "required": true, "min_score": 8 },
+      "responsiveness": { "required": true, "min_score": 8 },
+      "interaction_feedback": { "required": true, "min_score": 8 }
+    },
+    "performance_checks": [
+      {
+        "endpoint": "/api/health",
+        "max_response_time_ms": 1000,
+        "method": "GET"
+      }
+    ],
+    "architecture_checks": {
+      "layering": { "required": true, "description": "Strict 4-tier separation: controllers -> services -> domain/repositories" },
+      "typing": { "required": true, "description": "100% TypeScript type annotations" },
+      "role_boundaries": { "required": true, "description": "Admin routes require ADMIN role; customers rejected with 403" },
+      "soft_delete": { "required": true, "description": "Stocks never physically deleted" }
+    }
+  }
+}

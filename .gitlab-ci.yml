@@ -1,0 +1,81 @@
+# GitLab CI/CD Pipeline for MarketScope (BC-AINE-006)
+# Incorporates automated testing, architectural validation, Playwright E2E, and Claude Code Action
+
+stages:
+  - lint-and-audit
+  - compile
+  - test-architecture
+  - test-unit-integration
+  - test-e2e
+  - claude-agent-review
+
+variables:
+  NODE_ENV: "test"
+  ANTHROPIC_MODEL: "claude-3-7-sonnet-20250219"
+
+cache:
+  paths:
+    - node_modules/
+    - .npm/
+
+before_script:
+  - npm ci --cache .npm --prefer-offline
+
+# Stage 1: Lint & Security Audit
+lint-and-audit:
+  stage: lint-and-audit
+  script:
+    - npm run lint
+    - node .claude/hooks/detect-secrets.js
+    - node .claude/hooks/password-hash-check.js
+    - node .claude/hooks/bigdecimal-financial-check.js
+
+# Stage 2: Compilation & Typecheck
+typecheck:
+  stage: compile
+  script:
+    - npm run typecheck
+
+# Stage 3: Architecture Layering Enforcement (NFR-08)
+architecture-tests:
+  stage: test-architecture
+  script:
+    - npm run test:arch
+    - node .claude/hooks/role-boundary-check.js
+    - node .claude/hooks/executed-order-immutability-check.js
+
+# Stage 4: Unit & Integration AC-Tagged Tests
+unit-and-integration-tests:
+  stage: test-unit-integration
+  script:
+    - npm run test:coverage
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+    expire_in: 7 days
+
+# Stage 5: Playwright UI Verification
+playwright-e2e:
+  stage: test-e2e
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  script:
+    - npx playwright test
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+      - test-results/
+    expire_in: 7 days
+
+# Stage 6: Claude Code Agent Review Action
+claude-code-review:
+  stage: claude-agent-review
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - echo "Executing Claude Code automated PR evaluation against sprint contract..."
+    - node scripts/agent_sdk_runner.js sprint-contracts/sprint-1-foundation.json

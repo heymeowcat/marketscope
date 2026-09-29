@@ -1,0 +1,52 @@
+name: MarketScope CI Pipeline & Claude Code Action
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Static Security Hooks & Secret Scan
+        run: |
+          node .claude/hooks/detect-secrets.js
+          node .claude/hooks/password-hash-check.js
+          node .claude/hooks/bigdecimal-financial-check.js
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Architecture Layering Tests (NFR-08)
+        run: |
+          npm run test:arch
+          node .claude/hooks/role-boundary-check.js
+          node .claude/hooks/executed-order-immutability-check.js
+
+      - name: Unit & Integration AC-Tagged Tests
+        run: npm run test:coverage
+
+      - name: Playwright E2E UI Tests
+        run: |
+          npx playwright install --with-deps
+          npm run test:e2e
+
+      - name: Claude Code PR Review Action
+        if: github.event_name == 'pull_request'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          node scripts/agent_sdk_runner.js sprint-contracts/sprint-1-foundation.json
