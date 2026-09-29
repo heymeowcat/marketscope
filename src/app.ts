@@ -7,17 +7,22 @@ import { PriceHistoryRepository, IPriceHistoryRepository } from './repositories/
 import { WatchlistRepository, IWatchlistRepository } from './repositories/watchlist-repository';
 import { WatchlistSymbolRepository, IWatchlistSymbolRepository } from './repositories/watchlist-symbol-repository';
 import { HoldingRepository, IHoldingRepository } from './repositories/holding-repository';
+import { OrderRepository, IOrderRepository } from './repositories/order-repository';
 import { AuthService } from './services/auth-service';
 import { UserAdminService } from './services/user-admin-service';
 import { StockCatalogService } from './services/stock-catalog-service';
 import { WatchlistService } from './services/watchlist-service';
 import { PortfolioService } from './services/portfolio-service';
+import { AnalyticsService } from './services/analytics-service';
+import { OrderService } from './services/order-service';
 import { AuthController } from './controllers/auth-controller';
 import { UserAdminController } from './controllers/user-admin-controller';
 import { StockCatalogController } from './controllers/stock-catalog-controller';
 import { StockAdminController } from './controllers/stock-admin-controller';
 import { WatchlistController } from './controllers/watchlist-controller';
 import { PortfolioController } from './controllers/portfolio-controller';
+import { AnalyticsController } from './controllers/analytics-controller';
+import { OrderController } from './controllers/order-controller';
 import { errorHandler } from './controllers/middleware';
 
 export interface AppDeps {
@@ -28,6 +33,7 @@ export interface AppDeps {
   watchlistRepository?: IWatchlistRepository;
   watchlistSymbolRepository?: IWatchlistSymbolRepository;
   holdingRepository?: IHoldingRepository;
+  orderRepository?: IOrderRepository;
 }
 
 export function createApp(deps?: AppDeps): Express {
@@ -45,6 +51,7 @@ export function createApp(deps?: AppDeps): Express {
   const watchlistRepository = deps?.watchlistRepository || new WatchlistRepository();
   const watchlistSymbolRepository = deps?.watchlistSymbolRepository || new WatchlistSymbolRepository();
   const holdingRepository = deps?.holdingRepository || new HoldingRepository();
+  const orderRepository = deps?.orderRepository || new OrderRepository();
 
   // Initialize services
   const authService = new AuthService({ userRepository });
@@ -59,6 +66,16 @@ export function createApp(deps?: AppDeps): Express {
     holdingRepository,
     stockRepository
   });
+  const analyticsService = new AnalyticsService({
+    holdingRepository,
+    stockRepository
+  });
+  const orderService = new OrderService({
+    orderRepository,
+    userRepository,
+    stockRepository,
+    holdingRepository
+  });
 
   // Initialize controllers
   const authController = new AuthController({ authService });
@@ -67,6 +84,8 @@ export function createApp(deps?: AppDeps): Express {
   const stockAdminController = new StockAdminController({ stockCatalogService });
   const watchlistController = new WatchlistController({ watchlistService });
   const portfolioController = new PortfolioController({ portfolioService, userRepository });
+  const analyticsController = new AnalyticsController({ analyticsService });
+  const orderController = new OrderController({ orderService });
 
   // Routes
   app.use('/api/v1/auth', authController.getRouter());
@@ -75,6 +94,8 @@ export function createApp(deps?: AppDeps): Express {
   app.use('/api/v1/admin/stocks', stockAdminController.getRouter());
   app.use('/api/v1/watchlists', watchlistController.getRouter());
   app.use('/api/v1/portfolio', portfolioController.getRouter());
+  app.use('/api/v1/analytics', analyticsController.getRouter());
+  app.use('/api/v1/orders', orderController.getRouter());
 
   // Health check
   app.get('/api/health', (req, res) => {
@@ -95,9 +116,12 @@ export {
   WatchlistRepository,
   WatchlistSymbolRepository,
   HoldingRepository,
+  OrderRepository,
   AuthService,
   UserAdminService,
   StockCatalogService,
   WatchlistService,
-  PortfolioService
+  PortfolioService,
+  AnalyticsService,
+  OrderService
 };

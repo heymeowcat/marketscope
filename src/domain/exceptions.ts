@@ -94,8 +94,27 @@ export class PortfolioException extends DomainException {
 }
 
 export class InsufficientFundsException extends DomainException {
-  constructor(message: string = 'Insufficient funds for this order') {
+  public readonly required: string;
+  public readonly available: string;
+
+  constructor(message: string = 'Insufficient funds for this order', required?: string, available?: string) {
     super(message, 'INSUFFICIENT_FUNDS');
+    this.required = required || 'unknown';
+    this.available = available || 'unknown';
     Object.setPrototypeOf(this, InsufficientFundsException.prototype);
+  }
+}
+
+export class InvalidOrderStateException extends DomainException {
+  constructor(message: string) {
+    super(message, 'INVALID_ORDER_STATE');
+    Object.setPrototypeOf(this, InvalidOrderStateException.prototype);
+  }
+}
+
+export class OrderNotFoundException extends DomainException {
+  constructor(orderId: string) {
+    super(`Order ${orderId} not found`, 'ORDER_NOT_FOUND');
+    Object.setPrototypeOf(this, OrderNotFoundException.prototype);
   }
 }

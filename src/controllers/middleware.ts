@@ -7,7 +7,9 @@ import {
   WatchlistLimitExceededException,
   WatchlistUpdateException,
   WatchlistNotFoundException,
-  StockNotFoundException
+  StockNotFoundException,
+  InvalidOrderStateException,
+  InsufficientFundsException
 } from '../domain/exceptions';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
@@ -127,6 +129,26 @@ export const errorHandler = (
 
   if (error instanceof StockNotFoundException) {
     res.status(404).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof InvalidOrderStateException) {
+    res.status(409).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof InsufficientFundsException) {
+    res.status(400).json({
       error: {
         code: error.code,
         message: error.message
