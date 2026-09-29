@@ -1,0 +1,370 @@
+:root {
+  --color-bg: #ffffff;
+  --color-card: #f8f9fa;
+  --color-border: #e0e0e0;
+  --color-gain: #10b981;
+  --color-loss: #ef4444;
+  --color-primary: #2563eb;
+  --color-text: #1f2937;
+  --color-text-secondary: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #111827;
+    --color-card: #1f2937;
+    --color-border: #374151;
+    --color-gain: #10b981;
+    --color-loss: #ef4444;
+    --color-primary: #3b82f6;
+    --color-text: #f3f4f6;
+    --color-text-secondary: #9ca3af;
+  }
+}
+
+.portfolio-pnl {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--color-bg);
+}
+
+.pnl-header {
+  margin-bottom: 2rem;
+}
+
+.pnl-header h2 {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  margin: 0 0 1.5rem 0;
+  color: var(--color-text);
+}
+
+.portfolio-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .portfolio-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary-item {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-item.positive {
+  border-left: 4px solid var(--color-gain);
+}
+
+.summary-item.negative {
+  border-left: 4px solid var(--color-loss);
+}
+
+.summary-item .label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-item .value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.summary-item .value.gain {
+  color: var(--color-gain);
+}
+
+.summary-item .value.loss {
+  color: var(--color-loss);
+}
+
+/* Controls */
+.controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sort-btn {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text);
+}
+
+.sort-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.sort-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Holdings Table - Desktop Only */
+.holdings-table {
+  display: none;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+@media (min-width: 1025px) {
+  .holdings-table {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 80px 80px 120px 140px 120px 150px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-border);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 80px 80px 120px 140px 120px 150px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.table-row:hover {
+  background: var(--color-bg);
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.column {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.column.symbol {
+  font-weight: 700;
+}
+
+.column.price,
+.column.value {
+  text-align: right;
+}
+
+.column.pnl {
+  text-align: right;
+}
+
+.symbol-badge {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.pnl-amount {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.pnl-percent {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.column.pnl.gain {
+  color: var(--color-gain);
+}
+
+.column.pnl.loss {
+  color: var(--color-loss);
+}
+
+/* Holdings Cards - Mobile/Tablet */
+.holdings-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 1025px) {
+  .holdings-cards {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .holdings-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.holding-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.holding-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pnl-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+}
+
+.pnl-badge.positive {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-gain);
+  border-color: var(--color-gain);
+}
+
+.pnl-badge.negative {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-loss);
+  border-color: var(--color-loss);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-item .label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.card-item .value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.card-pnl {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-pnl.positive {
+  border-left: 3px solid var(--color-gain);
+}
+
+.card-pnl.negative {
+  border-left: 3px solid var(--color-loss);
+}
+
+.card-pnl .label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.card-pnl .value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.card-pnl .value.gain {
+  color: var(--color-gain);
+}
+
+.card-pnl .value.loss {
+  color: var(--color-loss);
+}
+
+.action-btn {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-secondary);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}

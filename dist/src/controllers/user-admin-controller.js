@@ -71,7 +71,12 @@ class UserAdminController {
                 });
                 return;
             }
-            const updatedUser = await this.userAdminService.updateUserRole(id, req.user.userId, {
+            const actorUserId = req.user.user_id || req.user.userId;
+            if (!actorUserId) {
+                res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing actor user ID' } });
+                return;
+            }
+            const updatedUser = await this.userAdminService.updateUserRole(id, actorUserId, {
                 role,
                 reason
             });

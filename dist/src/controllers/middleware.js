@@ -20,7 +20,12 @@ const parseJwt = (req, res, next) => {
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-        req.user = decoded;
+        req.user = {
+            user_id: decoded.user_id || decoded.userId,
+            userId: decoded.user_id || decoded.userId,
+            email: decoded.email,
+            role: decoded.role
+        };
         next();
     }
     catch (error) {
@@ -60,6 +65,69 @@ exports.requireRole = requireRole;
 const errorHandler = (error, req, res, next) => {
     if (error instanceof exceptions_1.RoleAccessDeniedException) {
         res.status(403).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.WatchlistUpdateException) {
+        res.status(422).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.WatchlistLimitExceededException) {
+        res.status(400).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.WatchlistNotFoundException) {
+        res.status(404).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.StockNotFoundException) {
+        res.status(404).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.InvalidOrderStateException) {
+        res.status(409).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.InsufficientFundsException) {
+        res.status(400).json({
+            error: {
+                code: error.code,
+                message: error.message
+            }
+        });
+        return;
+    }
+    if (error instanceof exceptions_1.DomainException) {
+        res.status(500).json({
             error: {
                 code: error.code,
                 message: error.message

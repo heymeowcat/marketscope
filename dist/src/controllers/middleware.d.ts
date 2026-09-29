@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { UserRole } from '../domain/user';
 export interface AuthenticatedRequest extends Request {
     user?: {
-        userId: string;
+        user_id?: string;
+        userId?: string;
         email: string;
         role: UserRole;
     };
