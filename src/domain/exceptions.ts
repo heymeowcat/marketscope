@@ -40,3 +40,62 @@ export class InvalidPasswordException extends DomainException {
     Object.setPrototypeOf(this, InvalidPasswordException.prototype);
   }
 }
+
+export class WatchlistLimitExceededException extends DomainException {
+  constructor(customerId: string, currentCount: number = 10) {
+    super(
+      `Customer ${customerId} has reached the maximum of 10 watchlists`,
+      'WATCHLIST_LIMIT_EXCEEDED'
+    );
+    Object.setPrototypeOf(this, WatchlistLimitExceededException.prototype);
+  }
+}
+
+export class WatchlistUpdateException extends DomainException {
+  constructor(message: string) {
+    super(message, 'WATCHLIST_UPDATE_FAILED');
+    Object.setPrototypeOf(this, WatchlistUpdateException.prototype);
+  }
+}
+
+export class WatchlistNotFoundException extends DomainException {
+  constructor(watchlistId: string) {
+    super(`Watchlist ${watchlistId} not found`, 'WATCHLIST_NOT_FOUND');
+    Object.setPrototypeOf(this, WatchlistNotFoundException.prototype);
+  }
+}
+
+export class StockNotFoundException extends DomainException {
+  constructor(symbol: string) {
+    super(`Stock symbol ${symbol} not found`, 'STOCK_NOT_FOUND');
+    Object.setPrototypeOf(this, StockNotFoundException.prototype);
+  }
+}
+
+export class StockAlreadyExistsException extends DomainException {
+  constructor(symbol: string) {
+    super(`Stock symbol ${symbol} already exists`, 'STOCK_ALREADY_EXISTS');
+    Object.setPrototypeOf(this, StockAlreadyExistsException.prototype);
+  }
+}
+
+export class HardDeleteNotAllowedException extends DomainException {
+  constructor(entity: string = 'Stock') {
+    super(`Hard delete of ${entity} is not allowed. Use soft-delete instead.`, 'HARD_DELETE_NOT_ALLOWED');
+    Object.setPrototypeOf(this, HardDeleteNotAllowedException.prototype);
+  }
+}
+
+export class PortfolioException extends DomainException {
+  constructor(message: string) {
+    super(message, 'PORTFOLIO_ERROR');
+    Object.setPrototypeOf(this, PortfolioException.prototype);
+  }
+}
+
+export class InsufficientFundsException extends DomainException {
+  constructor(message: string = 'Insufficient funds for this order') {
+    super(message, 'INSUFFICIENT_FUNDS');
+    Object.setPrototypeOf(this, InsufficientFundsException.prototype);
+  }
+}

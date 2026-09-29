@@ -1,13 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserRole, UserStatus } from '../domain/user';
-import { RoleAccessDeniedException } from '../domain/exceptions';
+import {
+  RoleAccessDeniedException,
+  DomainException,
+  WatchlistLimitExceededException,
+  WatchlistUpdateException,
+  WatchlistNotFoundException,
+  StockNotFoundException
+} from '../domain/exceptions';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
-    userId: string;
+    user_id?: string;
+    userId?: string;
     email: string;
     role: UserRole;
   };
@@ -27,12 +35,13 @@ export const parseJwt = (req: AuthenticatedRequest, res: Response, next: NextFun
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as {
-      userId: string;
-      email: string;
-      role: UserRole;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    req.user = {
+      user_id: decoded.user_id || decoded.userId,
+      userId: decoded.user_id || decoded.userId,
+      email: decoded.email,
+      role: decoded.role
     };
-    req.user = decoded;
     next();
   } catch (error) {
     res.status(401).json({
@@ -78,6 +87,56 @@ export const errorHandler = (
 ): void => {
   if (error instanceof RoleAccessDeniedException) {
     res.status(403).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof WatchlistUpdateException) {
+    res.status(422).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof WatchlistLimitExceededException) {
+    res.status(400).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof WatchlistNotFoundException) {
+    res.status(404).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof StockNotFoundException) {
+    res.status(404).json({
+      error: {
+        code: error.code,
+        message: error.message
+      }
+    });
+    return;
+  }
+
+  if (error instanceof DomainException) {
+    res.status(500).json({
       error: {
         code: error.code,
         message: error.message

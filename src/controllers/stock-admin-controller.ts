@@ -19,9 +19,9 @@ export class StockAdminController {
   }
 
   private setupRoutes(): void {
-    this.router.post('/stocks', parseJwt, requireRole(UserRole.ADMIN), this.createStock.bind(this));
-    this.router.put('/stocks/:symbol', parseJwt, requireRole(UserRole.ADMIN), this.updateStock.bind(this));
-    this.router.delete('/stocks/:symbol', parseJwt, requireRole(UserRole.ADMIN), this.deleteStock.bind(this));
+    this.router.post('/', parseJwt, requireRole(UserRole.ADMIN), this.createStock.bind(this));
+    this.router.put('/:symbol', parseJwt, requireRole(UserRole.ADMIN), this.updateStock.bind(this));
+    this.router.delete('/:symbol', parseJwt, requireRole(UserRole.ADMIN), this.deleteStock.bind(this));
   }
 
   private async createStock(req: AuthenticatedRequest, res: Response): Promise<void> {

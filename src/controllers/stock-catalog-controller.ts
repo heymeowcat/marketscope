@@ -18,8 +18,8 @@ export class StockCatalogController {
   }
 
   private setupRoutes(): void {
-    this.router.get('/stocks', this.searchStocks.bind(this));
-    this.router.get('/stocks/:symbol', this.getStock.bind(this));
+    this.router.get('/', this.searchStocks.bind(this));
+    this.router.get('/:symbol', this.getStock.bind(this));
   }
 
   private async searchStocks(req: AuthenticatedRequest, res: Response): Promise<void> {
