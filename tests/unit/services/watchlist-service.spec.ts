@@ -82,9 +82,7 @@ describe('WatchlistService', () => {
 
     // [AC-04-B] Should reject empty symbols
     it('[AC-04-B] should throw error when symbols array is empty', async () => {
-      expect(async () => {
-        await watchlistService.create('customer-123', 'Tech', []);
-      }).rejects.toThrow(WatchlistUpdateException);
+      await expect(watchlistService.create('customer-123', 'Tech', [])).rejects.toThrow(WatchlistUpdateException);
     });
 
     // [AC-04-C] Should enforce 10-watchlist limit
@@ -97,9 +95,7 @@ describe('WatchlistService', () => {
       }
 
       // Attempt to create 11th
-      expect(async () => {
-        await watchlistService.create(customerId, 'Watchlist 11', ['AAPL']);
-      }).rejects.toThrow(WatchlistLimitExceededException);
+      await expect(watchlistService.create(customerId, 'Watchlist 11', ['AAPL'])).rejects.toThrow(WatchlistLimitExceededException);
     });
   });
 
@@ -120,9 +116,7 @@ describe('WatchlistService', () => {
       const created = await watchlistService.create('customer-123', 'Old Name', ['AAPL']);
       const watchlistId = created.watchlist_id;
 
-      expect(async () => {
-        await watchlistService.update(watchlistId, 'New Name', ['NVDA', 'INVALID_SYM_XYZ']);
-      }).rejects.toThrow(WatchlistUpdateException);
+      await expect(watchlistService.update(watchlistId, 'New Name', ['NVDA', 'INVALID_SYM_XYZ'])).rejects.toThrow(WatchlistUpdateException);
 
       // Verify rollback: original state should be preserved
       const watchlist = await watchlistService.getById(watchlistId);
@@ -135,9 +129,7 @@ describe('WatchlistService', () => {
       const created = await watchlistService.create('customer-123', 'Tech', ['AAPL']);
       const watchlistId = created.watchlist_id;
 
-      expect(async () => {
-        await watchlistService.update(watchlistId, 'Tech', ['NONEXISTENT']);
-      }).rejects.toThrow(WatchlistUpdateException);
+      await expect(watchlistService.update(watchlistId, 'Tech', ['NONEXISTENT'])).rejects.toThrow(WatchlistUpdateException);
     });
   });
 
@@ -149,9 +141,7 @@ describe('WatchlistService', () => {
 
       await watchlistService.delete(watchlistId);
 
-      expect(async () => {
-        await watchlistService.getById(watchlistId);
-      }).rejects.toThrow(WatchlistNotFoundException);
+      await expect(watchlistService.getById(watchlistId)).rejects.toThrow(WatchlistNotFoundException);
     });
   });
 
@@ -168,9 +158,7 @@ describe('WatchlistService', () => {
     });
 
     it('[AC-04] should throw WatchlistNotFoundException if not found', async () => {
-      expect(async () => {
-        await watchlistService.getById('nonexistent-id');
-      }).rejects.toThrow(WatchlistNotFoundException);
+      await expect(watchlistService.getById('nonexistent-id')).rejects.toThrow(WatchlistNotFoundException);
     });
   });
 

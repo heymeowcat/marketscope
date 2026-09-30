@@ -57,22 +57,18 @@ describe('AuthService', () => {
         password: 'SecurePassword123!'
       });
 
-      expect(async () => {
-        await authService.register({
-          email: 'existing@example.com',
-          password: 'DifferentPassword123!'
-        });
-      }).rejects.toThrow(DuplicateEmailException);
+      await expect(authService.register({
+        email: 'existing@example.com',
+        password: 'DifferentPassword123!'
+      })).rejects.toThrow(DuplicateEmailException);
     });
 
     // [AC-01] Invalid password validation
     it('[AC-01] should reject password shorter than 8 characters', async () => {
-      expect(async () => {
-        await authService.register({
-          email: 'test@example.com',
-          password: 'Short1!'
-        });
-      }).rejects.toThrow(InvalidPasswordException);
+      await expect(authService.register({
+        email: 'test@example.com',
+        password: 'Short1!'
+      })).rejects.toThrow(InvalidPasswordException);
     });
   });
 
@@ -96,21 +92,17 @@ describe('AuthService', () => {
     });
 
     it('[AC-01] should reject login with invalid password', async () => {
-      expect(async () => {
-        await authService.login({
-          email: 'user@example.com',
-          password: 'WrongPassword123!'
-        });
-      }).rejects.toThrow(InvalidPasswordException);
+      await expect(authService.login({
+        email: 'user@example.com',
+        password: 'WrongPassword123!'
+      })).rejects.toThrow(InvalidPasswordException);
     });
 
     it('[AC-01] should reject login with non-existent email', async () => {
-      expect(async () => {
-        await authService.login({
-          email: 'nonexistent@example.com',
-          password: 'Password123!'
-        });
-      }).rejects.toThrow();
+      await expect(authService.login({
+        email: 'nonexistent@example.com',
+        password: 'Password123!'
+      })).rejects.toThrow();
     });
   });
 

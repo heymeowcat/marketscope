@@ -70,15 +70,13 @@ describe('StockCatalogService', () => {
         initial_price: '150.00'
       });
 
-      expect(async () => {
-        await stockCatalogService.createStock({
-          symbol: 'AAPL',
-          company_name: 'Apple Inc Duplicate',
-          sector: 'Technology',
-          exchange: 'NASDAQ',
-          initial_price: '150.00'
-        });
-      }).rejects.toThrow(StockAlreadyExistsException);
+      await expect(stockCatalogService.createStock({
+        symbol: 'AAPL',
+        company_name: 'Apple Inc Duplicate',
+        sector: 'Technology',
+        exchange: 'NASDAQ',
+        initial_price: '150.00'
+      })).rejects.toThrow(StockAlreadyExistsException);
     });
 
     // [AC-03-A] Price history should be recorded
@@ -140,11 +138,9 @@ describe('StockCatalogService', () => {
     });
 
     it('[AC-03] should throw error for non-existent stock', async () => {
-      expect(async () => {
-        await stockCatalogService.updateStock('INVALID', {
-          company_name: 'Test'
-        });
-      }).rejects.toThrow(StockNotFoundException);
+      await expect(stockCatalogService.updateStock('INVALID', {
+        company_name: 'Test'
+      })).rejects.toThrow(StockNotFoundException);
     });
   });
 
@@ -190,9 +186,7 @@ describe('StockCatalogService', () => {
     });
 
     it('[AC-03-B] should throw error for non-existent stock', async () => {
-      expect(async () => {
-        await stockCatalogService.softDeleteStock('INVALID');
-      }).rejects.toThrow(StockNotFoundException);
+      await expect(stockCatalogService.softDeleteStock('INVALID')).rejects.toThrow(StockNotFoundException);
     });
   });
 
@@ -219,15 +213,11 @@ describe('StockCatalogService', () => {
     it('[AC-03-D] should not return delisted stock', async () => {
       await stockCatalogService.softDeleteStock('NVDA');
 
-      expect(async () => {
-        await stockCatalogService.getStockBySymbol('NVDA');
-      }).rejects.toThrow(StockNotFoundException);
+      await expect(stockCatalogService.getStockBySymbol('NVDA')).rejects.toThrow(StockNotFoundException);
     });
 
     it('[AC-03-D] should throw error for non-existent stock', async () => {
-      expect(async () => {
-        await stockCatalogService.getStockBySymbol('INVALID');
-      }).rejects.toThrow(StockNotFoundException);
+      await expect(stockCatalogService.getStockBySymbol('INVALID')).rejects.toThrow(StockNotFoundException);
     });
   });
 

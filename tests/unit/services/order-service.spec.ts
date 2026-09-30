@@ -117,29 +117,24 @@ describe('OrderService', () => {
 
     // [AC-08-A] Insufficient funds failure
     it('[AC-08-A] should reject BUY order with insufficient funds', async () => {
-      expect(async () => {
-        // 10 shares * 180 = 1800, but customer only has 10000, so this should fail
-        // Let me create a customer with low balance
-        await userRepository.create({
-          id: 'poor-customer',
-          email: 'poor@example.com',
-          passwordHash: 'hash',
-          role: UserRole.CUSTOMER,
-          status: UserStatus.ACTIVE,
-          cashBalance: new Decimal('1000.00'),
-          createdAt: new Date(),
-          updatedAt: new Date()
-        });
+      // Create a customer with low balance
+      await userRepository.create({
+        id: 'poor-customer',
+        email: 'poor@example.com',
+        passwordHash: 'hash',
+        role: UserRole.CUSTOMER,
+        status: UserStatus.ACTIVE,
+        cashBalance: new Decimal('1000.00'),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
 
-        await orderService.placeOrder('poor-customer', 'AAPL', OrderSide.BUY, OrderType.MARKET, 10, null);
-      }).rejects.toThrow(InsufficientFundsException);
+      await expect(orderService.placeOrder('poor-customer', 'AAPL', OrderSide.BUY, OrderType.MARKET, 10, null)).rejects.toThrow(InsufficientFundsException);
     });
 
     // [AC-06] Stock not found error
     it('[AC-06] should reject order for non-existent stock', async () => {
-      expect(async () => {
-        await orderService.placeOrder(customerId, 'NONEXIST', OrderSide.BUY, OrderType.MARKET, 10, null);
-      }).rejects.toThrow(StockNotFoundException);
+      await expect(orderService.placeOrder(customerId, 'NONEXIST', OrderSide.BUY, OrderType.MARKET, 10, null)).rejects.toThrow(StockNotFoundException);
     });
   });
 
@@ -152,9 +147,7 @@ describe('OrderService', () => {
       await orderService.executeOrder(order.id, new Decimal('180.00'));
 
       // Try to cancel executed order
-      expect(async () => {
-        await orderService.cancelOrder(order.id);
-      }).rejects.toThrow(InvalidOrderStateException);
+      await expect(orderService.cancelOrder(order.id)).rejects.toThrow(InvalidOrderStateException);
     });
 
     // [AC-07] Can cancel pending order

@@ -110,21 +110,17 @@ describe('UserAdminService', () => {
     });
 
     it('[AC-02] should throw error when updating user to same role', async () => {
-      expect(async () => {
-        await userAdminService.updateUserRole(customerUserId, adminUserId, {
-          role: UserRole.CUSTOMER
-        });
-      }).rejects.toThrow(InvalidUserStateException);
+      await expect(userAdminService.updateUserRole(customerUserId, adminUserId, {
+        role: UserRole.CUSTOMER
+      })).rejects.toThrow(InvalidUserStateException);
     });
 
     it('[AC-02] should throw error when user does not exist', async () => {
       const nonExistentUserId = uuidv4();
 
-      expect(async () => {
-        await userAdminService.updateUserRole(nonExistentUserId, adminUserId, {
-          role: UserRole.ADMIN
-        });
-      }).rejects.toThrow(UserNotFoundException);
+      await expect(userAdminService.updateUserRole(nonExistentUserId, adminUserId, {
+        role: UserRole.ADMIN
+      })).rejects.toThrow(UserNotFoundException);
     });
 
     it('[AC-02] should not create audit log when update fails', async () => {
