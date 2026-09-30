@@ -71,7 +71,10 @@ Read `.claude/skills/evaluate/SKILL.md` for the full three-layer verification wo
 
 ## Structured Failure Report
 
-In addition to the prose verdict, write a structured failure JSON to `specs/reviews/eval-failures-NNN.json` for each failing check:
+In addition to the prose verdict:
+
+1. **Write `specs/reviews/eval-failures-NNN.json`** for each failing check (structured JSON below).
+2. **Append to `.claude/state/failures.md`** using the failure entry format (see template in that file). This feeds the pattern-detection → learned-rules extraction loop. Do this BEFORE returning to the generator for a retry.
 
 ```json
 {
@@ -85,7 +88,7 @@ In addition to the prose verdict, write a structured failure JSON to `specs/revi
     },
     "stack_trace": "Extracted from Docker logs / process stderr. Include file:line if available.",
     "error_type": "key_error | type_error | import_error | timeout | connection_refused | validation_error | assertion_error",
-    "files_likely_involved": ["backend/src/service/user_service.py:45"],
+    "files_likely_involved": ["src/services/user-service.ts:45"],
     "prior_attempts": []
   }
 }

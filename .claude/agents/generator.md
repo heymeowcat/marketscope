@@ -24,11 +24,12 @@ You are the generator half of a GAN-inspired loop. The evaluator is your adversa
 ## Inputs
 
 - Stories from `specs/stories/story-NNN.md`
+  - **FALLBACK:** If `specs/stories/` does not exist, read `specs/*_spec.md` directly. Treat each Acceptance Criteria (AC-NN) block as a story unit. The component map (`specs/design/component-map.md`) defines file ownership per feature — read it if it exists, else infer ownership from the 4-tier layer structure.
 - Component map from `specs/design/component-map.md`
 - API contracts from `specs/design/api-contracts.schema.json`
 - Data models from `specs/design/data-models.schema.json`
-- Architecture from `specs/design/architecture.md`
-- Learned rules from `.claude/state/learned-rules.md` (read before each group)
+- Architecture from `.claude/architecture.md` (MarketScope 4-tier TypeScript blueprint — `src/controllers/`, `src/services/`, `src/domain/`, `src/repositories/`)
+- Learned rules from `.claude/state/learned-rules.md` (read before each group — **mandatory**)
 - Code generation principles from `.claude/skills/code-gen/SKILL.md`
 - TDD workflow from `superpowers:test-driven-development` (invoke before writing implementation code)
 
@@ -37,7 +38,7 @@ You are the generator half of a GAN-inspired loop. The evaluator is your adversa
 This agent requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
 
 For each sprint group:
-1. Read the group's stories from `specs/stories/`
+1. Read the group's stories from `specs/stories/` (or fall back to `specs/*_spec.md` — see Inputs)
 2. Read `specs/design/component-map.md` to assign file ownership to each teammate
 3. Spawn one sub-agent per story — assign it:
    - The story file path
@@ -122,7 +123,12 @@ Max 5 concurrent teammates per phase. If a phase has >5 stories, batch in groups
 - Target: 100% meaningful coverage. Floor: 80% (ratchet gate blocks below this)
 
 ### Step 5: Run Tests
-- Run the project test suite: `uv run pytest --cov=src` or equivalent
+- Run the project test suite:
+  ```bash
+  npm run test:coverage    # Vitest: unit + integration + architecture tests
+  npm run test:arch        # dependency-cruiser architecture layering validation
+  npm run build && npm run test:e2e  # Playwright E2E (MUST build before E2E)
+  ```
 - If tests fail, do not hand off — diagnose, fix, re-run
 - If coverage < 80%, do not hand off — add tests for uncovered lines
 - Collect test output for the evaluator summary
