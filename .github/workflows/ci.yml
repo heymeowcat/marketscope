@@ -39,6 +39,9 @@ jobs:
       - name: Unit & Integration AC-Tagged Tests
         run: npm run test:coverage
 
+      - name: Build Application
+        run: npm run build
+
       - name: Playwright E2E UI Tests
         run: |
           npx playwright install --with-deps

@@ -97,10 +97,12 @@ export function createApp(deps?: AppDeps): Express {
   app.use('/api/v1/analytics', analyticsController.getRouter());
   app.use('/api/v1/orders', orderController.getRouter());
 
-  // Health check
-  app.get('/api/health', (req, res) => {
-    res.status(200).json({ status: 'ok' });
-  });
+  // Health check (satisfies NFR-07 and Playwright webServer check)
+  const healthHandler = (req: express.Request, res: express.Response) => {
+    res.status(200).json({ status: 'ok', uptime: process.uptime() });
+  };
+  app.get('/health', healthHandler);
+  app.get('/api/health', healthHandler);
 
   // Error handling
   app.use(errorHandler);

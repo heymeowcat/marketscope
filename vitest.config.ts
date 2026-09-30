@@ -19,6 +19,7 @@ export default defineConfig({
       branches: 80,
       statements: 80
     },
-    include: ['tests/**/*.spec.ts']
+    include: ['tests/**/*.spec.ts'],
+    exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**']
   }
 });
