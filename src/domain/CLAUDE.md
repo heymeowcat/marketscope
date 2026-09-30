@@ -21,3 +21,24 @@
   - Partial updates are rejected with `WatchlistUpdateException`.
 - **AC-09 & AC-10 (Portfolio & Analytics Math)**:
   - Implement deterministic formulas in `PortfolioPnLPolicy` and `StatsAggregatorRule`.
+
+## 3. Canonical Domain Exceptions Checklist (`src/domain/exceptions.ts`)
+All domain exceptions extend `DomainException` and MUST be exported from `src/domain/exceptions.ts`:
+- `HardDeleteNotAllowedException` — Block physical deletion of stocks / trade records (AC-03)
+- `StockNotFoundException`, `StockAlreadyExistsException`, `InvalidStockPriceException` — Catalog rules (AC-03)
+- `InvalidOrderStateException` — Order state machine illegal transitions (AC-07)
+- `InsufficientFundsException` — Cash balance guard with `required` and `available` fields (AC-08)
+- `WatchlistLimitExceededException` — Max 10 watchlists per customer (AC-04)
+- `WatchlistUpdateException` — Watchlist atomic update failure (AC-05)
+- `PortfolioException` — Valuation and P&L errors (AC-09)
+- `UnauthorizedRoleException` — Role boundary violations (AC-02, NFR-04)
+
+## 4. Canonical Entity Contracts & Enums
+- **User (`src/domain/user.ts`)**:
+  - Properties: `id` (never `userId`), `email`, `passwordHash` (never `hashed_password`), `role`, `status`, `cashBalance`, `createdAt`, `updatedAt`.
+  - Enums: `UserRole` (`CUSTOMER`, `ADMIN`, `SUSPENDED`), `UserStatus` (`ACTIVE`, `INACTIVE` — never `'ACTIVATED'`).
+- **Stock (`src/domain/stock.ts`)**:
+  - Properties: `symbol`, `companyName`, `currentPrice: Decimal`, `status`, `sector`, `exchange`.
+  - Enums: `StockStatus` (`ACTIVE`, `DELISTED` — soft-deleted).
+- **Order (`src/domain/order.ts`)**:
+  - Enums: `OrderSide` (`BUY`, `SELL`), `OrderType` (`MARKET`, `LIMIT`), `OrderStatus` (`PENDING`, `EXECUTED`, `CANCELLED`, `REJECTED`).

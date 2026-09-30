@@ -113,16 +113,34 @@ npm run verify
 
 ---
 
-## 5. Layered CLAUDE.md Navigation
+## 5. Substrate Guardrails & Discovered Rules (Mandatory)
 
-- [specs/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/specs/CLAUDE.md) — Specification authoring & AC traceability guidelines
-- [.claude/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/.claude/CLAUDE.md) — Agent roles, hooks execution, and sprint contracts
-- [src/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/src/CLAUDE.md) — Source code architecture & layering rules
-- [src/controllers/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/src/controllers/CLAUDE.md) — Controller & API routing conventions
-- [src/services/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/src/services/CLAUDE.md) — Service layer & transaction rules
-- [src/domain/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/src/domain/CLAUDE.md) — Pure domain logic & fixed-point math
-- [src/repositories/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/src/repositories/CLAUDE.md) — Append-only persistence & soft-delete rules
-- [frontend/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/frontend/CLAUDE.md) — UI design, responsive layouts & component patterns
-- [tests/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/tests/CLAUDE.md) — TDD rules, AC tagging & coverage floors
-- [scripts/CLAUDE.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/scripts/CLAUDE.md) — CLI tools, seed data, and Claude Agent SDK runner
-- [AGENTS.md](file:///Users/vidurafernando/Documents/claudeharnes/helio-sdlc-harness/AGENTS.md) — Table of Contents for all autonomous agents
+1. **Async Promise Rejections in Vitest**:
+   - ALWAYS use `await expect(promise).rejects.toThrow(ExpectedException);`
+   - NEVER use `expect(async () => ...).toThrow()`. Vitest will not catch rejected promises inside async functions.
+2. **Controller Router Relative Paths**:
+   - Define controller routes relative to mount point (`/` and `/:symbol`). Never repeat the resource prefix (`/stocks`).
+3. **Strict Null Checks on Authenticated Context**:
+   - Always guard `if (!req.user?.userId) return res.status(401)...` before calling service methods.
+4. **Canonical Entity Schemas & Enums in Tests**:
+   - Always use canonical entity properties (`id`, `passwordHash`) and enums (`UserRole.CUSTOMER`, `UserStatus.ACTIVE`, `StockStatus.ACTIVE`, `Decimal.js`).
+5. **E2E & Test Runner Separation**:
+   - Vitest runs `tests/unit/`, `tests/integration/`, `tests/architecture/`, `tests/security/`.
+   - Playwright exclusively runs `tests/e2e/`. Always run `npm run build` before `playwright test`.
+   - Mount health checks on both `/health` and `/api/health`.
+
+---
+
+## 6. Layered CLAUDE.md Navigation
+
+- [specs/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/specs/CLAUDE.md) — Specification authoring & AC traceability guidelines
+- [.claude/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/.claude/CLAUDE.md) — Agent roles, hooks execution, and sprint contracts
+- [src/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/src/CLAUDE.md) — Source code architecture & layering rules
+- [src/controllers/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/src/controllers/CLAUDE.md) — Controller & API routing conventions
+- [src/services/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/src/services/CLAUDE.md) — Service layer & transaction rules
+- [src/domain/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/src/domain/CLAUDE.md) — Pure domain logic & fixed-point math
+- [src/repositories/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/src/repositories/CLAUDE.md) — Append-only persistence & soft-delete rules
+- [frontend/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/frontend/CLAUDE.md) — UI design, responsive layouts & component patterns
+- [tests/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/tests/CLAUDE.md) — TDD rules, AC tagging & coverage floors
+- [scripts/CLAUDE.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/scripts/CLAUDE.md) — CLI tools, seed data, and Claude Agent SDK runner
+- [AGENTS.md](file:///Users/vidurafernando/Documents/claudecodeProjects/marketscope/AGENTS.md) — Table of Contents for all autonomous agents

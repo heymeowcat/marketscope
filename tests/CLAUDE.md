@@ -24,10 +24,46 @@ Every test verifying a business requirement MUST be explicitly tagged with its A
 - `// [AC-09] Portfolio Valuation & P&L Math`
 - `// [AC-10] Top 5 Gainers & Losers Ranking`
 
-## 4. Execution Commands
+## 4. Mandatory Assertion & Async Patterns (Vitest vs Playwright)
+- **Async Promise Rejections (CRITICAL)**:
+  - When asserting that an asynchronous function or service throws, ALWAYS use `rejects.toThrow`:
+    ```ts
+    // CORRECT:
+    await expect(service.method(args)).rejects.toThrow(SpecificException);
+
+    // FORBIDDEN (will cause false pass or unhandled rejection):
+    expect(async () => await service.method(args)).toThrow(SpecificException);
+    ```
+- **Test Runner Separation**:
+  - `vitest` runs `tests/unit/`, `tests/integration/`, `tests/architecture/`, `tests/security/`.
+  - `playwright` runs `tests/e2e/`.
+  - NEVER import `@playwright/test` in unit, integration, or architecture tests.
+  - NEVER import `vitest` in `tests/e2e/`.
+
+## 5. Test Data Seeding & Entity Contracts
+When seeding repositories in integration tests, ALWAYS conform to canonical domain entity schemas:
+- **User Entity**:
+  ```ts
+  await userRepository.create({
+    id: 'customer-123',             // NEVER userId or user_id
+    email: 'customer@example.com',
+    passwordHash: 'hashed_password', // NEVER hashed_password
+    role: UserRole.CUSTOMER,         // Use UserRole enum, NEVER raw strings
+    status: UserStatus.ACTIVE,       // Use UserStatus enum (ACTIVE, INACTIVE), NEVER 'ACTIVATED'
+    cashBalance: new Decimal('50000'), // ALWAYS Decimal.js instance
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+  ```
+- **Stock Entity**:
+  - `status: StockStatus.ACTIVE` | `StockStatus.DELISTED` (use enum)
+  - `currentPrice: new Decimal('...')`
+
+## 6. Execution Commands
 ```bash
-npm run test           # Run all unit and integration tests
+npm run test           # Run all unit and integration tests (Vitest)
 npm run test:coverage  # Generate lcov.info / coverage report
-npm run test:arch      # Run architectural boundaries check
-npm run test:e2e       # Run Playwright E2E UI validation
+npm run test:arch      # Run architectural boundaries check (dependency-cruiser)
+npm run test:e2e       # Run Playwright E2E UI validation (auto-runs build first)
+npm run verify         # Full CI verification gate
 ```

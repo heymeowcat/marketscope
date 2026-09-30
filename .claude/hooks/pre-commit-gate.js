@@ -77,6 +77,8 @@ function checkArchitectureViolations(pyFiles) {
   return violations;
 }
 
+const { spawnSync } = require('child_process');
+
 let input;
 try {
   input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
@@ -110,21 +112,17 @@ function findProjectDir(startDir) {
 const scriptDir = path.dirname(path.resolve(__filename));
 const projectDir = findProjectDir(scriptDir) || process.cwd();
 
-const srcDir = path.join(projectDir, 'src');
+// Execute TypeScript architecture validation (dependency-cruiser)
+const archResult = spawnSync('npm', ['run', 'test:arch'], {
+  encoding: 'utf8',
+  cwd: projectDir,
+  shell: true
+});
 
-if (!fs.existsSync(srcDir)) {
-  process.exit(0);
-}
-
-const pyFiles = findPyFiles(srcDir);
-const violations = checkArchitectureViolations(pyFiles);
-
-if (violations.length > 0) {
-  process.stdout.write('BLOCKED: Architecture violations found — fix before committing:\n');
-  for (const v of violations) {
-    process.stdout.write(`  ${v}\n`);
-  }
-  process.stdout.write('Fix: Move imports to the correct layer or extract shared types to src/types/.\n');
+if (archResult.status !== 0) {
+  process.stdout.write('BLOCKED: Architecture violations found (dependency-cruiser) — fix before committing:\n');
+  process.stdout.write(archResult.stdout || archResult.stderr || '');
+  process.stdout.write('\nFix: Adhere to strict 4-tier layering (controllers -> services -> repositories -> domain).\n');
   process.exit(2);
 }
 

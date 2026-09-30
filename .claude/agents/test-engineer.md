@@ -28,28 +28,30 @@ You are the Test Engineer for the Claude Harness Engine. Your role is to produce
 |---|---|
 | Test plan | `specs/test_artefacts/test-plan.md` |
 | Test cases per story | `specs/test_artefacts/cases/TC-NNN.md` |
-| Playwright E2E tests | `e2e/` |
-| Unit/integration tests | Alongside source files (e.g., `src/api/users.test.ts`) |
-| Test data fixtures | `e2e/fixtures/` and `src/__fixtures__/` |
+| Playwright E2E tests | `tests/e2e/` |
+| Unit tests | `tests/unit/` |
+| Integration tests | `tests/integration/` |
+| Architecture tests | `tests/architecture/` |
+| Test data fixtures | `tests/fixtures/` |
 
 ## Test Strategy
 
-### Layer 1: Unit Tests
-- Test individual functions, utilities, and pure components in isolation
-- Use mocks for external dependencies (database, HTTP calls)
-- Co-locate with source files: `src/utils/format.ts` → `src/utils/format.test.ts`
-- Coverage target: meaningful coverage of business logic, not line coverage percentage
+### Layer 1: Unit Tests (Vitest)
+- Test domain rules, entities, and isolated services in `tests/unit/`.
+- Must be tagged with AC identifier: `// [AC-NN]`.
+- **Async Promise Rejections**: ALWAYS use `await expect(promise).rejects.toThrow(ExpectedException)`. NEVER wrap async calls in `expect(async () => ...).toThrow()`.
 
-### Layer 2: Integration Tests
-- Test API routes end-to-end with a real (test) database
-- Verify request validation, authentication enforcement, and response shape against schema
-- Use a test database or in-memory alternative — never the production database
-- One integration test file per route group: `src/api/users.integration.test.ts`
+### Layer 2: Integration Tests (Vitest)
+- Test Express REST endpoints with Supertest in `tests/integration/`.
+- Seed test repositories using canonical entity schemas:
+  - `User`: `id`, `passwordHash`, `UserRole` enum, `UserStatus` enum, `cashBalance: new Decimal(...)`.
+- Verify HTTP status codes, headers, and transaction atomicity.
 
 ### Layer 3: E2E Tests (Playwright)
-- Test complete user journeys from browser through to database
-- One spec file per story: `e2e/S-001-login.spec.ts`
-- Must correspond to acceptance criteria — every AC gets at least one test case
+- Test full browser flows or HTTP health verification in `tests/e2e/`.
+- One spec file per journey in `tests/e2e/`.
+- Run with `npm run test:e2e` (which automatically compiles via `pretest:e2e`).
+- Never import `@playwright/test` into Vitest unit or integration test files.
 
 ## Playwright Patterns
 

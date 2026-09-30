@@ -73,12 +73,21 @@ Name boundary tests descriptively:
 
 ---
 
-## Gotchas
+## Gotchas (Strict Anti-Patterns)
 
-- Mocking business logic instead of testing it (hides bugs, creates false confidence)
-- Writing tests that only test the happy path — error paths matter equally
-- Using `time.sleep()` or `waitForTimeout` in tests — use proper async patterns
-- Tests that depend on execution order — each test must be independently runnable
-- Asserting on implementation details (private method calls) instead of observable outcomes
-- Using production database credentials in any test environment
-- Hardcoded port numbers without fallback — use dynamic port allocation in integration tests
+- **Async Promise Rejection Anti-Pattern**:
+  - **NEVER** use `expect(async () => await fn()).toThrow()`. Vitest will not catch rejected promises inside async arrow functions.
+  - **ALWAYS** use `await expect(fn()).rejects.toThrow(ExpectedException)`.
+- **Test Runner Cross-Contamination**:
+  - `tests/e2e/` is exclusively run by Playwright (`npm run test:e2e`).
+  - `tests/unit/`, `tests/integration/`, `tests/architecture/` are run by Vitest (`npm test`).
+  - Never import `@playwright/test` inside Vitest test files.
+- **Entity Schema Mismatch in Fixtures**:
+  - Always conform to domain models: `User` has `id` (not `userId`), `passwordHash` (not `hashed_password`), `role` (`UserRole` enum), `status` (`UserStatus` enum), `cashBalance` (`Decimal`).
+- Mocking business logic instead of testing it (hides bugs, creates false confidence).
+- Writing tests that only test the happy path — error paths matter equally.
+- Using `time.sleep()` or `waitForTimeout` in tests — use proper async patterns.
+- Tests that depend on execution order — each test must be independently runnable.
+- Asserting on implementation details (private method calls) instead of observable outcomes.
+- Using production database credentials in any test environment.
+- Hardcoded port numbers without fallback — use dynamic port allocation in integration tests.

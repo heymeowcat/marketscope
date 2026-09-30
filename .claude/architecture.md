@@ -1,84 +1,43 @@
-# Architecture
+# Architecture (MarketScope 4-Tier Blueprint)
 
 ## Layer Hierarchy
 
-The project follows a strict layered architecture. Dependencies flow **downward only** — a layer may import from layers below it but never from layers above it.
+MarketScope strictly enforces a 4-tier architecture. Dependencies flow **downward only** — a layer may import from layers below it but never from layers above it.
 
 ```
-┌─────────────┐
-│     UI      │  ← Layer 6 (highest)
-├─────────────┤
-│     API     │  ← Layer 5
-├─────────────┤
-│   Service   │  ← Layer 4
-├─────────────┤
-│ Repository  │  ← Layer 3
-├─────────────┤
-│   Config    │  ← Layer 2
-├─────────────┤
-│    Types    │  ← Layer 1 (lowest)
-└─────────────┘
+┌─────────────────┐
+│   Controllers   │  ← Layer 4 (HTTP REST endpoints, middleware, routing)
+├─────────────────┤
+│    Services     │  ← Layer 3 (Business transactions, domain orchestration, audit logging)
+├─────────────────┤
+│  Repositories   │  ← Layer 2 (Append-only trade ledgers, soft-deletion, data persistence)
+├─────────────────┤
+│     Domain      │  ← Layer 1 (Entities, pure rules, Decimal.js math, exceptions)
+└─────────────────┘
 ```
 
 ### Layer Definitions
 
-| Layer | Responsibility | May Import From |
-|-------|---------------|-----------------|
-| Types | Domain models, interfaces, enums, shared type definitions | (none) |
-| Config | Environment variables, feature flags, constants, app configuration | Types |
-| Repository | Data access, persistence, external data sources | Types, Config |
-| Service | Business logic, domain rules, orchestration | Types, Config, Repository |
-| API | Route handlers, request/response mapping, middleware, validation | Types, Config, Repository, Service |
-| UI | Components, pages, client-side state, rendering | Types, Config, Service, API |
+| Layer | Path | Responsibility | May Import From | May NOT Import |
+|-------|------|---------------|-----------------|----------------|
+| **Domain** | `src/domain/` | Pure business entities, state machines, domain rules, exceptions | `decimal.js` | Express, Repositories, Services, Controllers |
+| **Repositories** | `src/repositories/` | Data persistence, append-only order ledgers, soft-delete updates | `src/domain/`, standard lib | Services, Controllers, Express |
+| **Services** | `src/services/` | Transaction orchestration, domain coordination, balance checks | `src/domain/`, `src/repositories/` | Controllers, Express |
+| **Controllers** | `src/controllers/` | Express route handlers, input validation, role checks, HTTP status mapping | `src/domain/`, `src/services/` | Repositories (DIRECT REPOSITORY ACCESS FORBIDDEN) |
 
 ## One-Way Dependency Rule
 
 **Never import from a higher layer.**
+- A `Service` importing from `Controllers` — FORBIDDEN
+- A `Repository` importing from `Services` or `Controllers` — FORBIDDEN
+- A `Domain` module importing from any layer — FORBIDDEN (pure business domain)
+- A `Controller` directly importing a `Repository` — FORBIDDEN (must use Services)
 
-Violations:
-- A `Service` importing from `API` — FORBIDDEN
-- A `Repository` importing from `Service` — FORBIDDEN
-- A `Config` importing from `Repository` — FORBIDDEN
-- A `Types` importing from any other layer — FORBIDDEN
+## Architectural Validation
 
-The `check-architecture` hook enforces this rule on every file save.
-
-## Verification Commands
-
-### Types layer
+Architecture boundaries are strictly validated using `dependency-cruiser`:
 ```bash
-# No imports from Config, Repository, Service, API, or UI
-grep -rn "from.*config\|from.*repository\|from.*service\|from.*api\|from.*ui" src/types/
-```
-
-### Config layer
-```bash
-# No imports from Repository, Service, API, or UI
-grep -rn "from.*repository\|from.*service\|from.*api\|from.*ui" src/config/
-```
-
-### Repository layer
-```bash
-# No imports from Service, API, or UI
-grep -rn "from.*service\|from.*api\|from.*ui" src/repository/
-```
-
-### Service layer
-```bash
-# No imports from API or UI
-grep -rn "from.*api\|from.*ui" src/service/
-```
-
-### API layer
-```bash
-# No imports from UI
-grep -rn "from.*ui" src/api/
-```
-
-### Full architecture audit
-```bash
-# Run the architecture check hook directly
-.claude/hooks/check-architecture.sh
+npm run test:arch
 ```
 
 ## Cross-Cutting Concerns

@@ -19,6 +19,8 @@ You are the technical scaffolding agent responsible for generating complete, pro
    - Parse request params & DTO validation.
    - Enforce authentication and role guards (`requireRole`).
    - Catch domain exceptions and map to standardized error envelopes with correlation IDs.
+   - **Router Paths**: Define routes relative to mount point (`/` and `/:symbol`). NEVER duplicate mount prefix (`/stocks`).
+   - **Auth Null Checks**: Guard `req.user?.userId` with an early 401 return before passing to services.
    - Never import repositories.
 2. **Services** (`src/services/`):
    - Handle transactional boundaries (atomic operations).
@@ -26,7 +28,8 @@ You are the technical scaffolding agent responsible for generating complete, pro
    - Emit audit events.
 3. **Domain** (`src/domain/`):
    - Pure business rules and state machines.
-   - Subclasses of `DomainException`.
+   - Subclasses of `DomainException` in `src/domain/exceptions.ts` (include `HardDeleteNotAllowedException`).
+   - Canonical entity properties and enums (`UserRole`, `UserStatus`, `StockStatus`, `OrderStatus`).
    - Zero framework dependencies; `decimal.js` for financial calculations.
 4. **Repositories** (`src/repositories/`):
    - Append-only for trade ledgers and audit records.
