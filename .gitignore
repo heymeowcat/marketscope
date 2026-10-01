@@ -37,5 +37,4 @@ yarn-error.log*
 # Temporary files
 *.tmp
 .claude/settings.local.json
-features.json
-specs/reviews/
+# features.json and specs/reviews/ are intentionally tracked (rubric evidence)

@@ -1,0 +1,116 @@
+[
+  {
+    "id": "analytics",
+    "title": "Daily Statistics - Top 5 Gainers & Losers (AC-10)",
+    "layer": "api",
+    "group": "C",
+    "estimate": "8",
+    "passes": true,
+    "last_evaluated": "2026-09-30T03:58:00Z",
+    "failure_reason": null,
+    "failure_layer": null,
+    "details": {
+      "ac10_a_scenario": "PASS - 9 holdings with 5 gainers and 3 losers ranked correctly",
+      "ac10_b_edge_case": "PASS - zero holdings returns empty arrays",
+      "nfr01_decimal_precision": "PASS - all financial values strings with 2-decimal precision",
+      "authentication": "PASS - 401 without token, CUSTOMER/ADMIN allowed",
+      "unit_tests_passed": 7,
+      "unit_tests_total": 7,
+      "integration_tests_passed": 5,
+      "integration_tests_total": 5,
+      "architecture_violations": 0,
+      "modules_verified": 47
+    }
+  },
+  {
+    "id": "watchlist",
+    "title": "Watchlist Management (AC-04, AC-05)",
+    "layer": "api",
+    "group": "B",
+    "estimate": "13",
+    "passes": true,
+    "last_evaluated": "2026-10-01T08:41:00Z",
+    "failure_reason": null,
+    "failure_layer": null,
+    "details": {
+      "ac04_creation": "PASS - POST /api/v1/watchlists creates watchlist with min 1 symbol",
+      "ac04_limit": "PASS - 10-watchlist cap enforced, WatchlistLimitExceededException raised",
+      "ac05_atomic_update": "PASS - batch symbol add/remove rolls back on invalid ticker",
+      "unit_tests_passed": 14,
+      "unit_tests_total": 14,
+      "integration_tests_passed": 10,
+      "integration_tests_total": 10,
+      "fix_note": "18 TypeScript compile errors fixed in commit de220cf (router path, null guards, enum schema)"
+    }
+  },
+  {
+    "id": "portfolio",
+    "title": "Portfolio Statistics & Valuation (AC-09)",
+    "layer": "api",
+    "group": "B",
+    "estimate": "8",
+    "passes": true,
+    "last_evaluated": "2026-10-01T08:41:00Z",
+    "failure_reason": null,
+    "failure_layer": null,
+    "details": {
+      "ac09_stats": "PASS - GET /api/v1/portfolio/stats returns total_invested, current_value, absolute_pnl, percent_pnl",
+      "ac09_holdings": "PASS - GET /api/v1/portfolio/holdings returns cost basis per holding",
+      "ac09_summary": "PASS - GET /api/v1/portfolio/summary returns aggregated portfolio view",
+      "unit_tests_passed": 54,
+      "unit_tests_total": 54,
+      "nfr01_decimal_math": "PASS - all P&L computed with Decimal.js, serialised as 2dp strings",
+      "fix_note": "null-guard and router path fixes applied in commit de220cf"
+    }
+  },
+  {
+    "id": "user-management",
+    "title": "User Registration & Admin Role Management (AC-01, AC-02, NFR-03, NFR-04)",
+    "layer": "api",
+    "group": "A",
+    "estimate": "10",
+    "passes": true,
+    "last_evaluated": "2026-09-29T22:30:00Z",
+    "failure_reason": null,
+    "failure_layer": null,
+    "details": {
+      "ac01_registration": "PASS - POST /api/v1/auth/register creates ACTIVE CUSTOMER with initial cash",
+      "ac02_role_audit": "PASS - role changes logged with actor, target, old/new roles, UTC timestamp",
+      "nfr03_password": "PASS - bcrypt salt rounds=10, zero plaintext passwords",
+      "nfr04_role_boundary": "PASS - /api/v1/admin/* returns 403 for non-admin"
+    }
+  },
+  {
+    "id": "stock-catalog",
+    "title": "Stock Catalog Administration (AC-03)",
+    "layer": "api",
+    "group": "A",
+    "estimate": "6",
+    "passes": true,
+    "last_evaluated": "2026-09-29T22:30:00Z",
+    "failure_reason": null,
+    "failure_layer": null,
+    "details": {
+      "ac03_soft_delete": "PASS - DELETE sets status=DELISTED, stamps delisted_at; zero hard deletes",
+      "ac03_crud": "PASS - POST/PUT/DELETE /api/v1/admin/stocks fully functional"
+    }
+  },
+  {
+    "id": "orders",
+    "title": "Order Lifecycle & Insufficient Funds (AC-06, AC-07, AC-08, NFR-01, NFR-02)",
+    "layer": "api",
+    "group": "C",
+    "estimate": "16",
+    "passes": true,
+    "last_evaluated": "2026-09-30T04:00:00Z",
+    "failure_reason": null,
+    "failure_layer": null,
+    "details": {
+      "ac06_placement": "PASS - BUY/SELL orders accepted with cash-sufficiency check",
+      "ac07_state_machine": "PASS - PENDING->EXECUTED/CANCELLED transitions enforced",
+      "ac08_insufficient_funds": "PASS - InsufficientFundsException raised with 422 when cash < order total",
+      "nfr01_decimal": "PASS - all order financials use Decimal.js",
+      "nfr02_append_only": "PASS - executed orders immutable, append-only trade ledger"
+    }
+  }
+]

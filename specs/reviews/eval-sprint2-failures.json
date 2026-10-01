@@ -1,0 +1,58 @@
+{
+  "sprint": "Sprint 2: Watchlist & Portfolio Valuation",
+  "evaluation_date": "2026-09-30T03:36:50Z",
+  "verdict": "FAIL",
+  "failure_layer": "infrastructure",
+  "failure_reason": "TypeScript compilation errors prevent code rebuild. Multiple missing exports and type violations detected.",
+  "failures": [
+    {
+      "layer": "infrastructure",
+      "gate": "evaluator",
+      "check": "TypeScript compilation",
+      "actual": {
+        "status": "build_failed",
+        "error_count": 18
+      },
+      "stack_trace": "Multiple compilation errors:\n1. src/domain/stock-soft-delete-rule.ts:1 - Module '\"./exceptions\"' has no exported member 'HardDeleteNotAllowedException'\n2. src/repositories/stock-repository.ts:3 - Module '\"../domain/exceptions\"' has no exported member 'HardDeleteNotAllowedException'\n3. src/controllers/portfolio-controller.ts:48 - Argument of type 'string | undefined' is not assignable to parameter of type 'string'\n4. src/controllers/portfolio-controller.ts:65 - Argument of type 'string | undefined' is not assignable to parameter of type 'string'\n5. src/controllers/portfolio-controller.ts:93 - Argument of type 'string | undefined' is not assignable to parameter of type 'string'\n6. src/controllers/user-admin-controller.ts:94 - Argument of type 'string | undefined' is not assignable to parameter of type 'string'\n7. tests/integration/watchlist-creation.spec.ts - Type '\"CUSTOMER\"' is not assignable to type 'UserRole' (multiple instances)\n8. tests/integration/watchlist-atomic-update.spec.ts - Type '\"ACTIVATED\"' is not assignable to type 'UserStatus' (multiple instances)",
+      "error_type": "compilation_error",
+      "files_likely_involved": [
+        "src/domain/exceptions.ts",
+        "src/domain/stock-soft-delete-rule.ts",
+        "src/repositories/stock-repository.ts",
+        "src/controllers/portfolio-controller.ts",
+        "src/controllers/user-admin-controller.ts",
+        "tests/integration/watchlist-creation.spec.ts",
+        "tests/integration/watchlist-atomic-update.spec.ts"
+      ],
+      "prior_attempts": []
+    },
+    {
+      "layer": "api",
+      "gate": "evaluator",
+      "check": "AC-04: POST /api/v1/watchlists endpoint availability",
+      "actual": {
+        "status": 404,
+        "message": "Cannot POST /api/v1/watchlists"
+      },
+      "explanation": "Endpoint returns 404. While the auth endpoint works (POST /api/v1/auth/register returns 201), the watchlist endpoints are not accessible. This may indicate the controllers are not properly registered or the compiled code is stale due to build failures.",
+      "error_type": "route_not_found",
+      "files_likely_involved": [
+        "src/app.ts",
+        "dist/src/controllers/watchlist-controller.js"
+      ],
+      "prior_attempts": []
+    }
+  ],
+  "test_results": {
+    "unit_tests": "191 passed",
+    "unit_tests_failed": "0 failed",
+    "integration_tests": "15 passed",
+    "integration_tests_failed": "24 failed (from unrelated AC-03 stock-catalog tests)",
+    "sprint2_specific_tests": {
+      "watchlist_creation": "4 passed",
+      "watchlist_atomic_update": "6 passed",
+      "portfolio_statistics": "10 passed"
+    }
+  },
+  "summary": "Sprint 2 unit tests for watchlist and portfolio pass, but API routes are not accessible. TypeScript compilation has 18 errors preventing code rebuild. The application is running from a previous build, but any code changes cannot be compiled. This is a blocking infrastructure issue that must be resolved before API testing can proceed."
+}
